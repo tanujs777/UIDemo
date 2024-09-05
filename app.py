@@ -5,33 +5,32 @@ from io import StringIO
 if 'document_text' not in st.session_state:
     st.session_state['document_text'] = None
 
+# Correct background image and square file uploader styles
 st.markdown("""
     <style>
-    body {
-        background-color: #f5f5f5;
-        font-family: 'Arial', sans-serif;
-        color: #333333;
+    /* Apply the background image */
+    .stApp {
+        background-image: url('https://img.freepik.com/free-vector/gradient-3d-stairs-background_23-2149156757.jpg');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
     }
-    .main h1 {
-        font-size: 2.8em;
-        color: #1f77b4;
-        text-align: center;
-        margin-top: 30px;
-        margin-bottom: 10px;
-    }
-    .custom-blue-text {
-        font-size: 1.4em;
-        text-align: center;
-        color: #1f77b4;
-        margin-bottom: 30px;
-        font-weight: bold;
-    }
-    .stFileUploader {
+    
+    /* Ensure the file uploader is square and left-aligned */
+    div[data-testid="stFileUploadDropzone"] {
         border: 2px dashed #1f77b4 !important;
         padding: 15px;
-        margin-bottom: 25px;
         background-color: #eaf3fc;
+        width: 250px !important;  /* Square width */
+        height: 250px !important; /* Square height */
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        margin-left: 10px !important; /* Push further to the left */
+        margin-top: 15px !important;
     }
+
     .stButton button {
         background-color: #FFD700 !important;
         color: #000000 !important;
@@ -42,9 +41,11 @@ st.markdown("""
         cursor: pointer;
         margin-top: 10px;
     }
+    
     .stButton button:hover {
         background-color: #FFC107 !important;
     }
+
     .custom-success-box {
         background-color: #eaf3fc !important;
         color: #000000 !important;
@@ -54,16 +55,19 @@ st.markdown("""
         border-left: 6px solid #1f77b4;
         margin-top: 20px;
     }
+    
     .stSpinner {
         color: #1f77b4;
         font-size: 1.2em;
     }
+    
     .stMarkdown h3 {
         color: #1f77b4;
         font-size: 1.6em;
         margin-top: 30px;
         text-align: center;
     }
+
     .stMarkdown p {
         font-size: 1.2em;
         color: #000000 !important;
@@ -72,6 +76,7 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
+# Function to extract text from docx
 def extract_text_from_docx(docx_file):
     doc = docx.Document(docx_file)
     full_text = []
@@ -79,16 +84,25 @@ def extract_text_from_docx(docx_file):
         full_text.append(para.text)
     return '\n'.join(full_text)
 
+# Simulated step extraction function
 def extract_steps_from_llm(text):
     steps = f"Extracted steps from document:\n\n{text[:200]}..."
     return steps
 
-st.title("📄 Training Steps Extractor")
+# Use the sidebar for left-aligned file uploader
+st.sidebar.title("Upload your document")
 
+# Add the company's logo above the file uploader
+st.sidebar.image("https://etimg.etb2bimg.com/photo/105552577.cms", use_column_width=True)
+
+# File uploader
+uploaded_file = st.sidebar.file_uploader("Upload a file (TXT or DOCX)", type=["txt", "docx"])
+
+# Main UI title and instructions
+st.title("📄 Training Steps Extractor")
 st.markdown('<p class="custom-blue-text">Upload your document, and this tool will extract and display the training steps.</p>', unsafe_allow_html=True)
 
-uploaded_file = st.file_uploader("Upload a file (TXT or DOCX)", type=["txt", "docx"])
-
+# Process the uploaded file
 if uploaded_file is not None:
     if uploaded_file.name.endswith(".txt"):
         stringio = StringIO(uploaded_file.getvalue().decode("utf-8"))
@@ -99,11 +113,11 @@ if uploaded_file is not None:
     st.session_state['document_text'] = document_text
     st.markdown('<div class="custom-success-box">Document uploaded successfully! Click \'Extract Steps\' to proceed.</div>', unsafe_allow_html=True)
 
+# Display extracted steps when the button is clicked
 if st.session_state['document_text'] is not None:
     if st.button("Extract Steps"):
         with st.spinner('Extracting steps...'):
             steps = extract_steps_from_llm(st.session_state['document_text'])
-            st.markdown('<div class="custom-success-box">Steps extracted successfully!</div>', unsafe_allow_html=True)
             st.markdown(f"### Extracted Steps\n\n{steps}")
 else:
     st.markdown('<div class="custom-success-box">Please upload a file to proceed.</div>', unsafe_allow_html=True)
