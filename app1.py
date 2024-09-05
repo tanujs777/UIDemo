@@ -32,7 +32,7 @@ st.markdown("""
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
-        margin-left: 10px !important; /* Push further to the left */
+        margin-left: 0px !important; /* Align to the left */
         margin-top: 15px !important;
     }
 
@@ -60,12 +60,12 @@ st.markdown("""
         border-left: 6px solid #1f77b4;
         margin-top: 20px;
     }
-    
+
     .stSpinner {
         color: #1f77b4;
         font-size: 1.2em;
     }
-    
+
     .stMarkdown h3 {
         color: #1f77b4;
         font-size: 1.6em;
@@ -129,22 +129,8 @@ with st.sidebar:
     # Add the company's logo
     st.image("https://etimg.etb2bimg.com/photo/105552577.cms", use_column_width=True)
 
-    # Logout button clears session state
-    if st.button("Logout"):
-        st.session_state['logged_in'] = False
-        st.experimental_rerun()
-
-# Check if the user is logged in
-if not st.session_state['logged_in']:
-    st.markdown("<h1>Welcome to the Training Steps Extractor</h1>", unsafe_allow_html=True)
-    st.markdown("<p>Please log in to continue.</p>", unsafe_allow_html=True)
-else:
     # Tabs for different file types
     tabs = st.tabs(["DOCX", "PDF", "TXT"])
-
-    # Main UI title and instructions
-    st.title("📄 Training Steps Extractor")
-    st.markdown('<p class="custom-blue-text">Upload your document, and this tool will extract and display the training steps.</p>', unsafe_allow_html=True)
 
     # DOCX Tab
     with tabs[0]:
@@ -170,6 +156,20 @@ else:
             document_text = stringio.read()
             st.session_state['document_text'] = document_text
             st.markdown('<div class="custom-success-box">TXT file uploaded successfully! Click \'Extract Steps\' to proceed.</div>', unsafe_allow_html=True)
+
+    # Logout button clears session state
+    if st.button("Logout"):
+        st.session_state['logged_in'] = False
+        st.experimental_rerun()
+
+# Check if the user is logged in
+if not st.session_state['logged_in']:
+    st.markdown("<h1>Welcome to the Training Steps Extractor</h1>", unsafe_allow_html=True)
+    st.markdown("<p>Please log in to continue.</p>", unsafe_allow_html=True)
+else:
+    # Main UI title and instructions
+    st.title("📄 Training Steps Extractor")
+    st.markdown('<p class="custom-blue-text">Upload your document, and this tool will extract and display the training steps.</p>', unsafe_allow_html=True)
 
     # Extract steps button and result display
     if st.session_state['document_text'] is not None:
